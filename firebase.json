@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "vibe-together-app-fa1a4",
+          "appId": "1:884248627658:android:8a91d3313a2c48be26e733",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "vibe-together-app-fa1a4",
+          "configurations": {
+            "android": "1:884248627658:android:8a91d3313a2c48be26e733",
+            "ios": "1:884248627658:ios:308d722de676dd2c26e733",
+            "macos": "1:884248627658:ios:308d722de676dd2c26e733",
+            "web": "1:884248627658:web:ec383f292d13486f26e733",
+            "windows": "1:884248627658:web:8d33033123e4d98926e733"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}
