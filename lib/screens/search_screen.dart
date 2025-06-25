@@ -2,12 +2,15 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:vibe_together_app/models/group_model.dart'; // <-- IMPORT GROUP MODEL
 import 'package:vibe_together_app/models/post_model.dart';
 import 'package:vibe_together_app/models/user_model.dart';
-import 'package:vibe_together_app/models/vibe_event_model.dart'; // <-- IMPORT VIBE EVENT MODEL
+import 'package:vibe_together_app/models/vibe_event_model.dart';
+import 'package:vibe_together_app/screens/group_detail_screen.dart'; // <-- IMPORT GROUP DETAIL SCREEN
 import 'package:vibe_together_app/screens/user_profile_screen.dart';
+import 'package:vibe_together_app/widgets/group_card_widget.dart'; // <-- IMPORT GROUP CARD
 import 'package:vibe_together_app/widgets/post_card_widget.dart';
-import 'package:vibe_together_app/widgets/vibe_event_card.dart'; // <-- IMPORT VIBE EVENT CARD
+import 'package:vibe_together_app/widgets/vibe_event_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -67,9 +70,8 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             _buildPostsFeed(),
             _buildUsersList(_searchQuery),
-            _buildVibesFeed(), // <-- USE THE NEW METHOD HERE
-            // Note: Groups have their own dedicated screen, but you could list them here too if desired.
-            const Center(child: Text("Groups have their own screen. This can show a search result.")),
+            _buildVibesFeed(),
+            _buildGroupsList(), // <-- USE THE NEW METHOD HERE
           ],
         ),
       ),
@@ -124,13 +126,9 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // --- NEW WIDGET TO LIST ALL VIBE EVENTS ---
   Widget _buildVibesFeed() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('vibes')
-          .orderBy('eventDate', descending: true)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('vibes').orderBy('eventDate', descending: true).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -147,6 +145,52 @@ class _SearchScreenState extends State<SearchScreen> {
             return VibeEventCard(event: vibes[index]);
           },
         );
+      },
+    );
+  }
+
+  // --- NEW WIDGET TO LIST ALL PUBLIC GROUPS ---
+  Widget _buildGroupsList() {
+    return StreamBuilder<QuerySnapshot>(
+      // This is the same query from our main GroupsScreen.
+      // Remember to create the Firestore Index for this query if you haven't already.
+      stream: FirebaseFirestore.instance
+          .collection('groups')
+          .where('isPublic', isEqualTo: true)
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData == false || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text("No public groups available."));
+        }
+        
+        // This handles potential errors from the stream (e.g., missing index)
+        if (snapshot.hasError) {
+          print("Error fetching groups: ${snapshot.error}");
+          return const Center(child: Text("Error loading groups. Check console for details."));
+        }
+
+        final groups = snapshot.data!.docs.map((doc) => Group.fromFirestore(doc)).toList();
+
+        return ListView.builder(
+          itemCount: groups.length,
+          itemBuilder: (context, index) {
+            final group = groups[index];
+            return GroupCard(
+              group: group,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GroupDetailScreen(groupId: group.id)),
+                );
+              },
+            );
+          },
+        );
+
       },
     );
   }
