@@ -3,15 +3,15 @@
 <!-- LEAVE SPACE FOR YOUR LOGO HERE -->
 <!-- Replace the src with the path to your logo once you have it -->
 <!-- For example: <img src="assets/logo/app_logo.png" alt="Vibe Together Logo" width="200"/> -->
-<img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750832781/ChatGPT_Image_Jun_25_2025_05_20_20_AM_qzzfl4.png" alt="Vibe Together Logo" width="200"/>
+<img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750832781/ChatGPT_Image_Jun_25_2025_05_20_20_AM_qzzfl4.png" alt="Vibez Logo" width="200"/>
 <br/>
 <br/>
 
-# Vibe Together
+# Vibez
 
 **Find your tribe. Share your vibe.**
 
-_Vibe Together is a Flutter-based mobile application designed to connect like-minded individuals through shared interests, events, and spontaneous social interactions. It's more than just a social network; it's a community platform built on the idea of finding people who match your "vibe"._
+_Vibez is a Flutter-based mobile application designed to connect like-minded individuals through shared interests, events, and spontaneous social interactions. It's more than just a social network; it's a community platform built on the idea of finding people who match your "vibe"._
 
 </div>
 
@@ -19,7 +19,7 @@ _Vibe Together is a Flutter-based mobile application designed to connect like-mi
 
 ## 🧠 The Vibe System: Our Core Philosophy
 
-At the heart of Vibe Together is a unique approach to matchmaking that goes beyond superficial profiles. We believe that true connections start with understanding personality.
+At the heart of Vibez is a unique approach to matchmaking that goes beyond superficial profiles. We believe that true connections start with understanding personality.
 
 Every new user is welcomed with a **conversational, audio-led quiz**. Instead of a boring form, the app asks a series of questions in a natural, friendly tone, making the onboarding process feel like a chat with a friend.
 
@@ -35,38 +35,43 @@ Based on their answers, each user is branded with one of **five core Vibe Attrib
 
 -   **🧘 The Harmonizer:** Values peace, comfort, and creating a sense of balance. They enjoy relaxing activities, nature, and a calm, stable environment.
 
-This initial "Vibe" is the foundation of our entire ecosystem. It powers the "Vibe Tribe" feed, helps suggest relevant groups and events, and fosters more meaningful initial connections by introducing you to people who genuinely share your outlook on life.
+This initial "Vibe" is the foundation of our entire ecosystem. It powers in-app notifications for new matches and helps foster more meaningful initial connections by introducing you to people who genuinely share your outlook on life.
 
 ---
 
 ## ✨ Features
 
-Vibe Together is packed with features designed to foster genuine connections and community engagement.
+Vibez is packed with features designed to foster genuine connections and community engagement.
 
 | Feature             | Description                                                                                                                             | Status      |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | **Vibe Onboarding** | A unique, conversational quiz with audio questions that assigns users one of five core "vibes" to kickstart the matching process.         | ✅ Complete |
-| **Dynamic Home Feed** | A unified, real-time feed showing the latest posts and "Vibe" events from the community, sorted chronologically.                        | ✅ Complete |
+| **Dynamic Home Feed** | A unified, real-time feed showing the latest public posts and "Vibe" events, sorted chronologically.                                    | ✅ Complete |
 | **Post Creation**   | Users can create text-based posts and enrich them with image uploads (powered by Cloudinary) to share their thoughts and experiences.   | ✅ Complete |
 | **Post Interaction**| Engage with posts through a fully functional Like and Comment system.                                                                 | ✅ Complete |
-| **Vibe Events**     | Create and discover user-generated events, from movie nights to sports meet-ups, with details on location, time, and attendees.          | ✅ Complete |
+| **Vibe Events**     | Create and discover user-generated events with images, details on location, time, attendees, and a dedicated comment section.             | ✅ Complete |
 | **Event Interaction** | A dynamic Join/Leave system for Vibe Events, with logic to handle full capacity.                                                        | ✅ Complete |
 | **Groups**          | Create and join public or private groups based on hobbies, location, or any shared interest. Each group has its own dedicated feed.       | ✅ Complete |
 | **User Profiles**     | View other users' profiles, see their primary vibe, and browse the content they've created.                                             | ✅ Complete |
 | **Profile Editing**   | Users can edit their own display name and profile picture, with changes reflected across all their past content.                          | ✅ Complete |
 | **Real-time Chat**    | A full chat system with a request/accept flow, ensuring users consent to conversations.                                                 | ✅ Complete |
 | **Live Search**     | A multi-tabbed search screen to discover Posts, Vibes, Groups, and other Users in real-time.                                           | ✅ Complete |
+| **In-App Notifications** | Receive notifications for new vibe matches directly in the app.                                                                    | ✅ Complete |
+| **Light Theme UI**    | A clean, modern, and branded light-mode user interface designed around the app's new logo and color scheme.                               | ✅ Complete |
 
 ---
 
 ## 📸 App Screenshots
 
 <div align="center">
-  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750833050/WhatsApp_Image_2025-06-25_at_11.59.18_88fdbf9d_mzcdig.jpg" width="200" alt="Home Screen"/>
-  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750833081/WhatsApp_Image_2025-06-25_at_11.59.18_f3183da6_krtybd.jpg" width="200" alt="Search Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848125/WhatsApp_Image_2025-06-25_at_16.07.15_d5bcd9fe_roo1zr.jpg" width="200" alt="Home Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848125/WhatsApp_Image_2025-06-25_at_16.07.15_61f358d2_nr61ae.jpg" width="200" alt="Search Screen"/>
   <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750833127/WhatsApp_Image_2025-06-25_at_11.59.17_cb20e113_jmr9tw.jpg" width="200" alt="Chat Screen"/>
-  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750833105/WhatsApp_Image_2025-06-25_at_11.59.17_cb051b18_s8lkcl.jpg" width="200" alt="Group Detail Screen"/>
-  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750833143/WhatsApp_Image_2025-06-25_at_11.59.16_c2a357ed_a9gd1b.jpg" width="200" alt="Profile Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848125/WhatsApp_Image_2025-06-25_at_16.07.15_fb3f8abe_xzxh6w.jpg" width="200" alt="Group Detail Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848126/WhatsApp_Image_2025-06-25_at_16.07.16_d261e8da_lghjic.jpg" width="200" alt="Users Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848293/Screenshot_2025-06-25_151155_e6k64r.png" width="200" alt="Profile Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848293/Screenshot_2025-06-25_151146_rti1zy.png" width="200" alt="Vibe Screen"/>
+  <img src="https://res.cloudinary.com/dr8g09icb/image/upload/v1750848292/Screenshot_2025-06-25_151204_gtyeef.png" width="200" alt="Notification Screen"/>
 </div>
 
 ---
@@ -77,7 +82,7 @@ This project leverages a modern and scalable stack, built entirely on Flutter an
 
 -   **Frontend:** [Flutter](https://flutter.dev/) - For building a high-performance, cross-platform mobile application from a single codebase.
 -   **Backend:** [Firebase](https://firebase.google.com/) - A comprehensive suite of tools for the backend.
-    -   **Authentication:** Firebase Auth for secure Google and Email/Password sign-in.
+    -   **Authentication:** Firebase Auth for secure Google sign-in.
     -   **Database:** Cloud Firestore, a NoSQL database for real-time data synchronization.
 -   **Image Hosting:** [Cloudinary](https://cloudinary.com/) - For robust image hosting, optimization, and delivery.
 -   **State Management:** [Provider](https://pub.dev/packages/provider) - For simple, efficient, and scalable state management.
