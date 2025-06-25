@@ -1,9 +1,10 @@
 // lib/widgets/auth_wrapper.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vibe_together_app/screens/home_screen.dart';
 import 'package:vibe_together_app/screens/login_screen.dart';
+import 'package:vibe_together_app/screens/main_screen.dart'; // <-- IMPORT NEW SCREEN
 import 'package:vibe_together_app/screens/onboarding_screen.dart';
 import 'package:vibe_together_app/services/auth_service.dart';
 
@@ -22,7 +23,6 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          // User is logged in, check if they've completed onboarding
           return FutureBuilder<bool>(
             future: authService.hasCompletedOnboarding(snapshot.data!.uid),
             builder: (context, onboardingSnapshot) {
@@ -30,11 +30,12 @@ class AuthWrapper extends StatelessWidget {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
               }
               if (onboardingSnapshot.data == true) {
-                // Onboarding complete, show home screen
-                return const HomeScreen();
+                // --- CHANGE IS HERE ---
+                // Onboarding complete, show MainScreen
+                return const MainScreen();
               } else {
                 // Onboarding not complete, show onboarding screen
-                return OnboardingScreen();
+                return const OnboardingScreen();
               }
             },
           );

@@ -3,9 +3,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vibe_together_app/models/post_model.dart';
 import 'package:vibe_together_app/models/user_model.dart';
 import 'package:vibe_together_app/screens/chat_screen.dart';
 import 'package:vibe_together_app/services/chat_service.dart';
+import 'package:vibe_together_app/widgets/post_card_widget.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -30,25 +32,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Future<void> _fetchUserData() async {
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .get();
+      final doc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
       if (doc.exists) {
-        setState(() {
-          _user = AppUser.fromFirestore(doc);
-          _isLoading = false;
-        });
+        setState(() { _user = AppUser.fromFirestore(doc); _isLoading = false; });
       } else {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() { _isLoading = false; });
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print("Error fetching user data: $e");
+      setState(() { _isLoading = false; });
     }
   }
 
@@ -64,75 +55,94 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _user == null
               ? const Center(child: Text("User not found."))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 20),
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundImage: NetworkImage(_user!.photoUrl),
-                        backgroundColor: Colors.grey.shade800,
+              : NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      SliverToBoxAdapter(
+                        child: _buildProfileHeader(),
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _user!.displayName,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(fontSize: 26),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: Chip(
-                          label: Text(
-                            _user!.primaryVibe ?? 'N/A',
-                            style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          backgroundColor: const Color(0xFFe94560),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                        ),
-                      ),
-                      const Spacer(),
-                      _buildChatButton(),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
+                    ];
+                  },
+                  body: _buildUserContent(),
                 ),
     );
   }
 
+  Widget _buildProfileHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          CircleAvatar(radius: 60, backgroundImage: NetworkImage(_user!.photoUrl)),
+          const SizedBox(height: 20),
+          Text(_user!.displayName, style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 20),
+          Chip(
+            label: Text(_user!.primaryVibe ?? 'N/A'),
+            backgroundColor: const Color(0xFFe94560),
+          ),
+          const SizedBox(height: 20),
+          _buildChatButton(),
+          const SizedBox(height: 20),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserContent() {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          const TabBar(
+            tabs: [
+              Tab(text: "Posts"),
+              Tab(text: "Vibes"),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildUserPosts(),
+                const Center(child: Text("User's created vibes coming soon!")),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserPosts() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('posts')
+          .where('authorId', isEqualTo: widget.userId)
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (snapshot.data!.docs.isEmpty) return const Center(child: Text("No posts yet."));
+        final posts = snapshot.data!.docs.map((doc) => Post.fromFirestore(doc)).toList();
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: posts.length,
+          itemBuilder: (context, index) => PostCard(post: posts[index]),
+        );
+      },
+    );
+  }
+
   Widget _buildChatButton() {
-    // This is a special case to prevent users from trying to chat with themselves.
-    if (widget.userId == _currentUserId) {
-      return const SizedBox.shrink();
-    }
-    
+    if (widget.userId == _currentUserId) return const SizedBox.shrink();
     return StreamBuilder<DocumentSnapshot>(
       stream: _chatService.getChatStream(widget.userId),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        if (!snapshot.hasData) return const CircularProgressIndicator();
 
-        // Case 1: No chat document exists. Show "Send Request".
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return ElevatedButton.icon(
-            onPressed: () {
-              _chatService.sendChatRequest(widget.userId);
-            },
-            icon: const Icon(Icons.send_and_archive),
-            label: const Text("Send Vibe Request"),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-            ),
-          );
+        if (!snapshot.data!.exists) {
+          return ElevatedButton.icon(onPressed: () => _chatService.sendChatRequest(widget.userId), icon: const Icon(Icons.send_and_archive), label: const Text("Send Vibe Request"));
         }
 
         final chatData = snapshot.data!.data() as Map<String, dynamic>;
@@ -140,71 +150,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         final requestedBy = chatData['requestedBy'];
         final chatId = snapshot.data!.id;
 
-        // Case 2: Status is 'pending'.
         if (status == 'pending') {
-          if (requestedBy == _currentUserId) {
-            // I sent the request. Show "Request Sent".
-            return ElevatedButton.icon(
-              onPressed: null, // Disabled
-              icon: const Icon(Icons.hourglass_top),
-              label: const Text("Request Sent"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            );
-          } else {
-            // They sent the request. Show "Accept".
-            return ElevatedButton.icon(
-              onPressed: () {
-                _chatService.acceptChatRequest(chatId);
-              },
-              icon: const Icon(Icons.check_circle_outline),
-              label: const Text("Accept Vibe"),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            );
-          }
+          return requestedBy == _currentUserId
+              ? ElevatedButton.icon(onPressed: null, icon: const Icon(Icons.hourglass_top), label: const Text("Request Sent"))
+              : ElevatedButton.icon(onPressed: () => _chatService.acceptChatRequest(chatId), icon: const Icon(Icons.check_circle_outline), label: const Text("Accept Vibe"));
         }
 
-        // Case 3: Status is 'accepted'.
         if (status == 'accepted') {
-          return ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                    chatId: chatId,
-                    otherUserName: _user!.displayName,
-                  ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.chat),
-            label: const Text("Message"),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-            ),
-          );
+          return ElevatedButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(chatId: chatId, otherUserName: _user!.displayName))), icon: const Icon(Icons.chat), label: const Text("Message"));
         }
-
-        // --- NEW CASE ---
-        // Case 4: Status is 'declined'.
+        
         if (status == 'declined') {
-          return ElevatedButton.icon(
-            onPressed: null, // Disabled
-            icon: const Icon(Icons.do_not_disturb_on),
-            label: const Text("Vibe Request Declined"),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-              backgroundColor: Colors.grey.shade700,
-              foregroundColor: Colors.white54,
-            ),
-          );
+          return ElevatedButton.icon(onPressed: null, icon: const Icon(Icons.do_not_disturb_on), label: const Text("Vibe Request Declined"));
         }
 
-        // Default/fallback case, should not be reached.
         return const SizedBox.shrink();
       },
     );
