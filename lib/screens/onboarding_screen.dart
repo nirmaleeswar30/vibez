@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibe_together_app/models/question_model.dart';
+import 'package:vibe_together_app/screens/vibe_reveal_screen.dart'; // <-- IMPORT NEW SCREEN
 import 'package:vibe_together_app/services/onboarding_data.dart';
-import 'package:vibe_together_app/widgets/auth_wrapper.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -19,9 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   final AudioPlayer _audioPlayer = AudioPlayer();
   int _currentPage = 0;
-  final Map<String, int> _vibeScores = {
-    'Explorer': 0, 'Creator': 0, 'Thinker': 0, 'Connector': 0, 'Harmonizer': 0
-  };
+  final Map<String, int> _vibeScores = { 'Explorer': 0, 'Creator': 0, 'Thinker': 0, 'Connector': 0, 'Harmonizer': 0 };
 
   @override
   void initState() {
@@ -29,10 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _audioPlayer.setVolume(1.0);
     _pageController.addListener(() {
       int next = _pageController.page!.round();
-      if (_currentPage != next) {
-        setState(() { _currentPage = next; });
-        _playQuestionAudio();
-      }
+      if (_currentPage != next) { setState(() { _currentPage = next; }); _playQuestionAudio(); }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _playQuestionAudio());
   }
@@ -85,7 +80,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
     await batch.commit();
     if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const AuthWrapper()), (Route<dynamic> route) => false);
+      // --- CHANGE IS HERE ---
+      // Navigate to the reveal screen instead of the AuthWrapper
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => VibeRevealScreen(primaryVibe: primaryVibe)),
+        (Route<dynamic> route) => false,
+      );
     }
   }
 
@@ -103,10 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: onboardingQuestions.length,
-        itemBuilder: (context, index) {
-          final question = onboardingQuestions[index];
-          return _buildQuestionPage(question);
-        },
+        itemBuilder: (context, index) => _buildQuestionPage(onboardingQuestions[index]),
       ),
     );
   }
@@ -114,33 +111,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildQuestionPage(Question question) {
     return Container(
       padding: const EdgeInsets.all(24.0),
-      // Removed dark gradient, respects theme now
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Icon(Icons.hearing, color: Theme.of(context).primaryColor, size: 60),
           const SizedBox(height: 30),
-          Text(
-            question.text,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: 24),
-          ),
+          Text(question.text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: 24)),
           const SizedBox(height: 50),
           ...question.answers.map((answer) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ElevatedButton(
-                  onPressed: () => _answerQuestion(answer.vibe),
-                  // Using a lighter, outlined style for answer choices
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Theme.of(context).primaryColor,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    elevation: 0.5,
-                  ),
-                  child: Text(answer.text, textAlign: TextAlign.center),
-                ),
-              )).toList(),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ElevatedButton(
+              onPressed: () => _answerQuestion(answer.vibe),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Theme.of(context).primaryColor, side: BorderSide(color: Colors.grey.shade300), elevation: 0.5),
+              child: Text(answer.text, textAlign: TextAlign.center),
+            ),
+          )).toList(),
         ],
       ),
     );

@@ -7,10 +7,12 @@ class VibeEvent {
   final String creatorId;
   final String creatorName;
   final String creatorPhotoUrl;
+  final String? imageUrl;
   final Timestamp eventDate;
   final String location;
   final int maxAttendees;
-  final List<String> attendees; // List of user UIDs
+  final List<String> attendees;
+  final int commentCount; // <-- NEW FIELD
 
   VibeEvent({
     required this.id,
@@ -18,10 +20,12 @@ class VibeEvent {
     required this.creatorId,
     required this.creatorName,
     required this.creatorPhotoUrl,
+    this.imageUrl,
     required this.eventDate,
     required this.location,
     required this.maxAttendees,
     required this.attendees,
+    required this.commentCount, // <-- NEW FIELD
   });
 
   factory VibeEvent.fromFirestore(DocumentSnapshot doc) {
@@ -32,10 +36,12 @@ class VibeEvent {
       creatorId: data['creatorId'] ?? '',
       creatorName: data['creatorName'] ?? '',
       creatorPhotoUrl: data['creatorPhotoUrl'] ?? '',
+      imageUrl: data['imageUrl'],
       eventDate: data['eventDate'] ?? Timestamp.now(),
       location: data['location'] ?? 'Venue not yet decided',
       maxAttendees: data['maxAttendees'] ?? 2,
       attendees: List<String>.from(data['attendees'] ?? []),
+      commentCount: data['commentCount'] ?? 0, // <-- NEW FIELD
     );
   }
 }
